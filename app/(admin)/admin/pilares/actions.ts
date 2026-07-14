@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 // Estas actions dependen de RLS (policy pillars_admin_write) para la
-// autorización real. La UI ya está protegida por middleware, pero la
+// autorización real. La UI está protegida por middleware, pero la
 // verdadera barrera de seguridad es la base de datos.
 
 export async function createPillarAction(formData: FormData) {
@@ -23,10 +23,11 @@ export async function createPillarAction(formData: FormData) {
   await supabase.from("pillars").insert({
     organization_id: myProfile?.organization_id,
     name,
-    description,
+    description: description || null,
   });
 
   revalidatePath("/admin/pilares");
+  revalidatePath("/reconocer");
 }
 
 export async function togglePillarAction(formData: FormData) {
@@ -35,4 +36,5 @@ export async function togglePillarAction(formData: FormData) {
   const isActive = formData.get("isActive") === "true";
   await supabase.from("pillars").update({ is_active: isActive }).eq("id", id);
   revalidatePath("/admin/pilares");
+  revalidatePath("/reconocer");
 }

@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { Avatar } from "@/components/avatar";
+import { ChangePasswordForm } from "./change-password";
 
 export default async function ProfilePage() {
   const supabase = createClient();
@@ -10,28 +12,41 @@ export default async function ProfilePage() {
     .single();
 
   return (
-    <main className="mx-auto max-w-xl p-4 sm:p-6">
-      <h1 className="mb-4 text-2xl font-semibold">Mi perfil</h1>
-      <dl className="space-y-3 rounded-2xl border border-neutral-200 bg-white p-5 text-sm">
-        <Row label="Nombre" value={profile?.display_name} />
-        <Row label="Correo" value={profile?.email} />
-        <Row label="Cargo" value={profile?.job_title} />
-        <Row label="Área" value={profile?.area} />
-        <Row label="Equipo" value={profile?.team} />
-      </dl>
-      <p className="mt-3 text-xs text-neutral-700">
-        Para actualizar tus datos, contacta a RRHH — el piloto no habilita edición de perfil por el
-        colaborador.
-      </p>
+    <main className="mx-auto max-w-xl px-4 py-8">
+      <h1 className="text-2xl font-extrabold">Mi perfil</h1>
+
+      <section className="card mt-4 p-5">
+        <div className="flex items-center gap-4">
+          <Avatar name={profile?.display_name ?? "?"} size="lg" tone="ink" />
+          <div>
+            <p className="font-heading text-lg font-extrabold">{profile?.display_name}</p>
+            <p className="font-ui text-sm text-graphite">
+              {[profile?.job_title, profile?.area].filter(Boolean).join(" · ") || "—"}
+            </p>
+          </div>
+        </div>
+
+        <dl className="mt-5 space-y-3 border-t border-line-soft pt-4">
+          <Row label="Correo" value={profile?.email} />
+          <Row label="Equipo" value={profile?.team} />
+          <Row label="Rol" value={profile?.role === "admin" ? "Administrador" : "Colaborador"} />
+        </dl>
+
+        <p className="mt-4 font-ui text-xs text-mist">
+          Para corregir tu nombre, cargo o área, pídeselo al administrador del programa.
+        </p>
+      </section>
+
+      <ChangePasswordForm />
     </main>
   );
 }
 
 function Row({ label, value }: { label: string; value?: string | null }) {
   return (
-    <div className="flex justify-between border-b border-neutral-100 pb-2 last:border-0">
-      <dt className="text-neutral-700">{label}</dt>
-      <dd>{value ?? "—"}</dd>
+    <div className="flex justify-between gap-4">
+      <dt className="font-ui text-sm text-graphite">{label}</dt>
+      <dd className="font-ui text-sm font-semibold">{value || "—"}</dd>
     </div>
   );
 }

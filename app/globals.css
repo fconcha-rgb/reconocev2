@@ -2,7 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Foco accesible con el neón de marca */
 :focus-visible {
-  outline: 2px solid theme("colors.accent.DEFAULT");
+  outline: 2px solid theme("colors.neon");
   outline-offset: 2px;
+}
+
+@layer base {
+  body {
+    @apply bg-soft text-ink antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  /* Botones: pills negros/blancos (ley de marca: el verde no es color de botón).
+     El hover del primario pasa a neón, como en el UI kit de falabella.com. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-2.5
+      font-ui text-sm font-semibold text-white transition-colors duration-150
+      hover:bg-neon hover:text-ink active:translate-y-px
+      disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line bg-white
+      px-5 py-2.5 font-ui text-sm font-semibold text-ink transition-colors duration-150
+      hover:border-ink disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5
+      font-ui text-xs font-semibold text-graphite transition-colors hover:bg-line-soft hover:text-ink;
+  }
+  .card {
+    @apply rounded-lg border border-line bg-white;
+  }
+  .input {
+    @apply w-full rounded-lg border border-line bg-white px-3.5 py-2.5 font-ui text-sm text-ink
+      placeholder:text-mist focus:border-ink focus:outline-none;
+  }
+  .label {
+    @apply mb-1.5 block font-ui text-xs font-semibold uppercase tracking-wider text-graphite;
+  }
+  /* Puntos: siempre neón sobre negro (eco del tag CMR del retail) */
+  .chip-points {
+    @apply inline-flex items-baseline gap-1 rounded-sm bg-ink px-2 py-1 font-ui text-xs font-bold text-neon;
+  }
+  /* Pilares: tag lima de esquinas duras (eco de la banderola) */
+  .tag-pillar {
+    @apply inline-flex items-center rounded-sm bg-verde px-2 py-0.5 font-ui text-xs font-semibold text-ink;
+  }
+  .overline {
+    @apply font-ui text-[11px] font-bold uppercase tracking-[0.12em] text-mist;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }

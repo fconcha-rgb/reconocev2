@@ -1,33 +1,34 @@
 import type { Config } from "tailwindcss";
 
-// Capa de design tokens REEMPLAZABLE.
-// Cuando el equipo de Diseño de Falabella entregue el Design System oficial,
-// reemplaza únicamente los valores de este bloque "brand" — no hay que tocar
-// componentes ni páginas. Ver docs/HUMAN_ACTIONS.md.
-const brand = {
-  primary: {
-    DEFAULT: "#2E2A6E", // placeholder sobrio — reemplazar por token oficial
-    foreground: "#FFFFFF",
-  },
-  accent: {
-    DEFAULT: "#F2C230", // placeholder sobrio — reemplazar por token oficial
-    foreground: "#1A1A1A",
-  },
-  neutral: {
-    50: "#FAFAFA",
-    100: "#F2F2F2",
-    200: "#E5E5E5",
-    700: "#404040",
-    900: "#1A1A1A",
-  },
-};
-
+// Design tokens oficiales — Falabella "Neon" 2024 (Brandbook).
+// Fuente: Falabella_Design_System/colors_and_type.css
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      colors: brand,
-      borderRadius: { xl: "0.75rem", "2xl": "1rem" },
+      colors: {
+        verde: "#ADD500",   // Verde Falabella (banderola) — marca, nunca botón
+        neon: "#00F400",    // Verde Neón — acentos, "Lo último"
+        ink: "#0A0A0A",     // texto principal / botones
+        "ink-soft": "#1F2024",
+        graphite: "#454A51", // texto secundario
+        mist: "#6E7479",     // texto terciario / meta
+        line: "#E2E5E7",
+        "line-soft": "#EEF0F1",
+        soft: "#F5F6F7",     // fondos suaves
+        danger: "#FF004D",   // rojo corporativo
+        success: "#44BF00",
+        warning: "#F2B600",
+      },
+      fontFamily: {
+        heading: ["var(--font-heading)", "Helvetica Neue", "Arial", "sans-serif"],
+        ui: ["var(--font-ui)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Impact", "Arial Narrow", "sans-serif"],
+      },
+      boxShadow: {
+        card: "0 2px 6px rgba(10,10,10,0.08), 0 2px 4px rgba(10,10,10,0.04)",
+        pop: "0 8px 24px rgba(10,10,10,0.10), 0 4px 8px rgba(10,10,10,0.06)",
+      },
     },
   },
   plugins: [],

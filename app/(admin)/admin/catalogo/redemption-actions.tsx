@@ -10,26 +10,26 @@ export function RedemptionActions({ redemptionId }: { redemptionId: string }) {
 
   async function resolve(status: "approved" | "rejected") {
     setLoading(true);
-    await resolveRedemptionAction(redemptionId, status, status === "rejected" ? "Rechazado por admin" : "Aprobado");
+    await resolveRedemptionAction(
+      redemptionId,
+      status,
+      status === "rejected" ? "Rechazado por admin" : "Aprobado"
+    );
     setLoading(false);
     router.refresh();
   }
 
   return (
-    <div className="flex gap-2">
-      <button
-        disabled={loading}
-        onClick={() => resolve("approved")}
-        className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-primary-foreground"
-      >
-        Aprobar
-      </button>
+    <div className="flex items-center gap-2">
       <button
         disabled={loading}
         onClick={() => resolve("rejected")}
-        className="rounded-lg border border-neutral-200 px-3 py-1 text-xs hover:bg-neutral-100"
+        className="btn-ghost text-danger hover:bg-danger/10 hover:text-danger"
       >
         Rechazar
+      </button>
+      <button disabled={loading} onClick={() => resolve("approved")} className="btn-primary px-4 py-2 text-xs">
+        {loading ? "…" : "Aprobar"}
       </button>
     </div>
   );

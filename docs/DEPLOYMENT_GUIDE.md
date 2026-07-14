@@ -1,3 +1,12 @@
+> **⚠️ Actualización v2 (julio 2026):** el login es únicamente
+> **correo + contraseña**. Ignora en esta guía todo lo relativo a
+> Microsoft Entra ID (paso 15), SMTP/invitaciones por correo y
+> `/set-password`: los usuarios se crean y sus contraseñas se
+> restablecen **desde la app** en Administración → Usuarios
+> (ver `docs/ONBOARDING_USUARIOS.md`). Además ejecuta una vez
+> `scripts/harden-jobs.sql` y agrega `SUPABASE_SERVICE_ROLE_KEY`
+> en Vercel (ahora es requerida).
+
 # Guía de despliegue — Sell In Reconoce
 
 Esta guía asume que no tienes experiencia técnica previa con GitHub, Supabase
@@ -139,18 +148,20 @@ En Supabase > Authentication > URL Configuration, agrega:
 - `https://TU-DOMINIO/dashboard` (production)
 - `https://*.vercel.app/dashboard` (previews, opcional)
 
-## 15. Configurar Microsoft Entra ID (producción)
+## 15. Configurar Microsoft Entra ID (OPCIONAL — omite este paso si no tienes permisos de Azure)
 
-Esto lo debe hacer alguien con permisos de administrador en el tenant de
-Microsoft de Falabella:
+Si decides no usar Entra ID (como en este piloto), tu login real es
+correo + contraseña. Ve directo a `docs/ONBOARDING_USUARIOS.md` para dar
+de alta a las personas reales. Si más adelante alguien con permisos de
+Azure quiere habilitarlo:
+
 1. Azure Portal > Entra ID > App registrations > New registration.
 2. Redirect URI: `https://TU-PROJECT-REF.supabase.co/auth/v1/callback`.
 3. Genera un Client Secret y copia Client ID, Client Secret y Tenant ID.
 4. En Supabase > Authentication > Providers > Azure, pega esos tres valores
    y activa el provider.
-5. Restringe el login a los dominios de correo de Falabella (allowlist) —
-   configúralo en Supabase o con una política adicional en el código si
-   tu tenant lo requiere.
+5. En Vercel, define `NEXT_PUBLIC_ENABLE_MICROSOFT_AUTH=true` — el botón
+   "Ingresar con Microsoft" aparece automáticamente en /login.
 
 ## 16. Configurar Teams (opcional)
 

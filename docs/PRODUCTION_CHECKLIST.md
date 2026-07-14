@@ -18,9 +18,12 @@ Marca cada ítem solo con evidencia real, no por suposición.
 - [ ] Backups automáticos activos
 
 ## Autenticación
-- [ ] `NEXT_PUBLIC_ENABLE_DEV_AUTH=false` en producción
-- [ ] Login con Microsoft Entra ID probado con al menos una cuenta real
-- [ ] Allowlist de dominios de correo configurada y probada
+- [ ] Método de login definido: Entra ID **o** correo+contraseña (este
+      piloto usa correo+contraseña — `NEXT_PUBLIC_ENABLE_DEV_AUTH=true`,
+      `NEXT_PUBLIC_ENABLE_MICROSOFT_AUTH=false`)
+- [ ] Trigger `0004_auto_profile_on_signup.sql` aplicado
+- [ ] SMTP propio configurado (Resend/SendGrid) si vas a invitar a muchas personas
+- [ ] Al menos una persona real invitada y probada de punta a punta
 
 ## Negocio
 - [ ] Primer administrador creado y validado
@@ -43,6 +46,7 @@ Marca cada ítem solo con evidencia real, no por suposición.
 ## Clasificación final
 Completa esta sección con evidencia real antes de decidir:
 - **GO**: todos los ítems de Código, Base de datos y Autenticación marcados.
-- **CONDITIONAL GO**: código y BD listos, pero falta Entra ID, dominio o
-  aprobación corporativa.
+- **CONDITIONAL GO**: código y BD listos, pero falta dominio propio o
+  aprobación corporativa (Entra ID ya no aplica si se decidió usar
+  correo+contraseña).
 - **NO-GO**: cualquier ítem de "Base de datos" o "Negocio" sin marcar.

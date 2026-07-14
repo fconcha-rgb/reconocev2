@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Banderola } from "@/components/banderola";
 
-const DEV_AUTH_ENABLED = process.env.NEXT_PUBLIC_ENABLE_DEV_AUTH === "true";
-
+// Único método de acceso: correo + contraseña (Supabase Auth).
+// Las cuentas las crea el administrador desde /admin/usuarios — no hay
+// registro público ni correos de invitación.
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -14,7 +16,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleDevLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -29,64 +31,88 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-1 text-xl font-semibold text-primary">Sell In Reconoce</h1>
-        <p className="mb-6 text-sm text-neutral-700">Ingresa para reconocer a tu equipo</p>
+    <main className="grid min-h-screen bg-white lg:grid-cols-[1.1fr,1fr]">
+      {/* Panel de marca */}
+      <section className="relative flex flex-col justify-between bg-ink p-8 text-white lg:p-14">
+        <div className="flex items-center gap-3">
+          <Banderola size={30} />
+          <span className="font-ui text-base font-bold lowercase tracking-tight">
+            sell in <span className="text-white/60">reconoce</span>
+          </span>
+        </div>
 
-        {/* Producción: botón de Microsoft Entra ID. Requiere configuración
-            real en Supabase Auth > Providers (ver docs/DEPLOYMENT_GUIDE.md).
-            Se muestra siempre; si Entra ID no está configurado, informa al
-            usuario en vez de fallar silenciosamente. */}
-        <button
-          type="button"
-          onClick={() =>
-            supabase.auth.signInWithOAuth({
-              provider: "azure",
-              options: { redirectTo: `${window.location.origin}/dashboard` },
-            })
-          }
-          className="mb-4 w-full rounded-xl border border-neutral-200 py-2.5 text-sm font-medium hover:bg-neutral-100"
-        >
-          Ingresar con Microsoft
-        </button>
+        <div className="py-12 lg:py-0">
+          <span className="inline-block bg-neon px-3 pb-0.5 pt-1.5 font-display text-5xl leading-none text-ink lg:text-7xl">
+            Reconoce
+          </span>
+          <h1 className="mt-5 font-heading text-3xl font-black leading-tight lg:text-5xl">
+            lo bueno se dice,
+            <br />y se dice a tiempo.
+          </h1>
+          <p className="mt-4 max-w-sm font-ui text-sm text-white/70 lg:text-base">
+            Reparte tus créditos del mes entre quienes lo hicieron bien. Cada
+            reconocimiento suma puntos reales, canjeables en el catálogo.
+          </p>
+        </div>
 
-        {DEV_AUTH_ENABLED && (
-          <>
-            <div className="my-4 flex items-center gap-2 text-xs text-neutral-700">
-              <div className="h-px flex-1 bg-neutral-200" />
-              solo desarrollo
-              <div className="h-px flex-1 bg-neutral-200" />
-            </div>
-            <form onSubmit={handleDevLogin} className="space-y-3">
+        <p className="hidden font-ui text-xs text-white/40 lg:block">
+          Equipo Sell In · Falabella Marketplace
+        </p>
+      </section>
+
+      {/* Formulario */}
+      <section className="flex items-center justify-center p-6 lg:p-14">
+        <div className="w-full max-w-sm">
+          <h2 className="font-heading text-2xl font-extrabold">Ingresa a tu cuenta</h2>
+          <p className="mt-1 font-ui text-sm text-graphite">
+            Usa el correo y la contraseña que te entregó el administrador.
+          </p>
+
+          <form onSubmit={handleLogin} className="mt-8 space-y-4">
+            <div>
+              <label htmlFor="email" className="label">Correo</label>
               <input
+                id="email"
                 type="email"
                 required
-                placeholder="correo@example.com"
+                autoComplete="email"
+                placeholder="nombre@falabella.cl"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
+                className="input"
               />
+            </div>
+            <div>
+              <label htmlFor="password" className="label">Contraseña</label>
               <input
+                id="password"
                 type="password"
                 required
-                placeholder="Contraseña"
+                autoComplete="current-password"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
+                className="input"
               />
-              {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-xl bg-primary py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-60"
-              >
-                {loading ? "Ingresando..." : "Ingresar"}
-              </button>
-            </form>
-          </>
-        )}
-      </div>
+            </div>
+
+            {error && (
+              <p role="alert" className="rounded-lg bg-danger/10 px-3 py-2 font-ui text-sm font-medium text-danger">
+                {error}
+              </p>
+            )}
+
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+              {loading ? "Ingresando…" : "Ingresar"}
+            </button>
+          </form>
+
+          <p className="mt-6 font-ui text-xs text-mist">
+            ¿Olvidaste tu contraseña o no tienes cuenta? Escríbele al
+            administrador del programa para que te la restablezca o cree.
+          </p>
+        </div>
+      </section>
     </main>
   );
 }

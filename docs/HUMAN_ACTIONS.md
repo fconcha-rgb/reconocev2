@@ -9,12 +9,17 @@ qué se necesita, quién debe obtenerlo/hacerlo, dónde y cómo validarlo.
 - **Dónde**: github.com, supabase.com, vercel.com.
 - **Cómo validar**: ver `docs/DEPLOYMENT_GUIDE.md` pasos 1–13.
 
-## 2. Microsoft Entra ID
-- **Qué**: registro de app, client ID/secret, tenant ID, allowlist de dominios.
-- **Quién**: administrador del tenant de Microsoft de Falabella.
-- **Dónde**: Azure Portal > Entra ID > App registrations.
-- **Cómo validar**: login real con una cuenta corporativa de prueba antes
-  del piloto.
+## 2. Microsoft Entra ID — DESCARTADO para esta etapa
+- **Decisión**: no se usará Entra ID (sin permisos de Azure Portal
+  disponibles). El login real de producción es **correo + contraseña**
+  (`NEXT_PUBLIC_ENABLE_DEV_AUTH=true`, `NEXT_PUBLIC_ENABLE_MICROSOFT_AUTH=false`).
+  El botón de Microsoft queda oculto automáticamente.
+- Si en el futuro alguien con permisos de Azure quiere habilitarlo, el
+  adapter ya existe en el código — solo hay que completar las 3 variables
+  `AZURE_AD_*`, activar el provider en Supabase, y poner
+  `NEXT_PUBLIC_ENABLE_MICROSOFT_AUTH=true`. Ver `docs/DEPLOYMENT_GUIDE.md`.
+- **Ver `docs/ONBOARDING_USUARIOS.md`** para cómo dar de alta a las ~100
+  personas reales sin Entra ID.
 
 ## 3. Falabella Design System — tokens oficiales
 - **Qué**: colores, tipografía, logo, íconos y componentes oficiales de

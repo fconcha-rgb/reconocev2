@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const ADMIN_PREFIX = "/admin";
-const PUBLIC_PATHS = ["/login", "/api/health"];
+const PUBLIC_PATHS = ["/login"];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } });
@@ -43,9 +43,8 @@ export async function middleware(request: NextRequest) {
       .single();
 
     // Deny-by-default: cualquier duda (perfil ausente, rol no admin,
-    // usuario inactivo) redirige fuera del panel de administración.
-    // Ocultar botones no es seguridad — esta verificación es la real,
-    // reforzada además por RLS en cada tabla y por cada Server Action.
+    // usuario inactivo) redirige fuera del panel. La barrera real además
+    // es RLS en cada tabla + verificación en cada Server Action.
     if (!profile || profile.role !== "admin" || profile.status !== "active") {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
@@ -57,5 +56,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg).*)"],
 };

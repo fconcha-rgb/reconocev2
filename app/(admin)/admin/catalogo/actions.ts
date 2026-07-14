@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { catalogItemSchema } from "@/lib/validations";
 
+// Estas actions usan la sesión del admin: RLS (catalog_admin_write) es la
+// autorización real. El middleware protege la ruta; la BD, los datos.
+
 export async function createCatalogItemAction(formData: FormData) {
   const supabase = createClient();
   const stockRaw = formData.get("stock");
@@ -37,4 +40,14 @@ export async function createCatalogItemAction(formData: FormData) {
   });
 
   revalidatePath("/admin/catalogo");
+  revalidatePath("/catalogo");
+}
+
+export async function toggleCatalogItemAction(formData: FormData) {
+  const supabase = createClient();
+  const id = String(formData.get("id"));
+  const isActive = formData.get("isActive") === "true";
+  await supabase.from("catalog_items").update({ is_active: isActive }).eq("id", id);
+  revalidatePath("/admin/catalogo");
+  revalidatePath("/catalogo");
 }

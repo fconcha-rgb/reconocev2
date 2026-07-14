@@ -13,7 +13,8 @@ export function UserRoleSelect({ userId, currentRole }: { userId: string; curren
       <select
         name="role"
         defaultValue={currentRole}
-        className="rounded-lg border border-neutral-200 px-2 py-1 text-xs"
+        aria-label="Rol"
+        className="rounded-lg border border-line bg-white px-2 py-1.5 font-ui text-xs font-semibold"
       >
         <option value="collaborator">Colaborador</option>
         <option value="admin">Admin</option>
