@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { toggleUserStatusAction, changeUserRoleAction } from "./actions";
+import { toggleUserStatusAction } from "./actions";
+import { UserRoleSelect } from "./user-role-select";
 
 export default async function AdminUsersPage() {
   const supabase = createClient();
@@ -31,18 +32,7 @@ export default async function AdminUsersPage() {
               <td className="p-3">{u.display_name}<br /><span className="text-xs text-neutral-700">{u.email}</span></td>
               <td className="p-3">{u.area}</td>
               <td className="p-3">
-                <form action={changeUserRoleAction} className="inline">
-                  <input type="hidden" name="userId" value={u.id} />
-                  <select
-                    name="role"
-                    defaultValue={u.role}
-                    onChange={(e) => e.currentTarget.form?.requestSubmit()}
-                    className="rounded-lg border border-neutral-200 px-2 py-1 text-xs"
-                  >
-                    <option value="collaborator">Colaborador</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </form>
+                <UserRoleSelect userId={u.id} currentRole={u.role} />
               </td>
               <td className="p-3">{u.status === "active" ? "Activo" : "Inactivo"}</td>
               <td className="p-3">
