@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { recognitionSchema } from "@/lib/validations";
+import { notifyTeamsRecognition } from "@/lib/teams-notify";
 
 export type ActionResult<T = undefined> =
   | { ok: true; data: T }
@@ -50,5 +51,44 @@ export async function createRecognitionAction(
 
   revalidatePath("/feed");
   revalidatePath("/dashboard");
+
+  // Notificación a Teams. Va en un try/catch propio para que, pase lo que
+  // pase (webhook caído, nombre no encontrado, etc.), el reconocimiento
+  // ya creado se devuelva igual como exitoso.
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const [{ data: sender }, { data: receiver }, { data: pillar }] =
+      await Promise.all([
+        supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", user?.id ?? "")
+          .single(),
+        supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", parsed.data.receiverId)
+          .single(),
+        supabase
+          .from("pillars")
+          .select("name")
+          .eq("id", parsed.data.pillarId)
+          .single(),
+      ]);
+
+    await notifyTeamsRecognition({
+      emisor: sender?.display_name ?? "Alguien",
+      receptor: receiver?.display_name ?? "un colaborador",
+      pilar: pillar?.name ?? "-",
+      puntos: parsed.data.amount,
+      mensaje: parsed.data.message,
+    });
+  } catch (err) {
+    console.error("[recognitions] Error al preparar notificación de Teams:", err);
+  }
+
   return { ok: true, data: { id: data as string } };
 }
