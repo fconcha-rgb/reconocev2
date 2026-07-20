@@ -1,5 +1,9 @@
-// Notifica un reconocimiento al canal de Teams configurado, vía el
-// webhook de Power Automate (trigger HTTP "manual").
+// Notifica un reconocimiento al canal de Teams, vía el flujo de Power
+// Automate creado con la plantilla "Post to a channel when a webhook
+// request is received".
+//
+// Esa plantilla espera un mensaje con un "attachment" de tipo Adaptive
+// Card (no un JSON libre) — por eso el body tiene esta forma específica.
 //
 // Requiere la variable de entorno TEAMS_RECOGNITION_WEBHOOK_URL (server-only,
 // SECRETA — no lleva prefijo NEXT_PUBLIC_). Se configura en Vercel:
@@ -16,6 +20,47 @@ type TeamsRecognitionPayload = {
   puntos: number;
   mensaje: string;
 };
+
+function buildAdaptiveCardMessage(payload: TeamsRecognitionPayload) {
+  return {
+    type: "message",
+    attachments: [
+      {
+        contentType: "application/vnd.microsoft.card.adaptive",
+        contentUrl: null,
+        content: {
+          type: "AdaptiveCard",
+          $schema: "https://adaptivecards.io/schemas/adaptive-card.json",
+          version: "1.4",
+          body: [
+            {
+              type: "TextBlock",
+              text: "🏆 Nuevo reconocimiento",
+              weight: "Bolder",
+              size: "Medium",
+              wrap: true,
+            },
+            {
+              type: "FactSet",
+              facts: [
+                { title: "De:", value: payload.emisor },
+                { title: "Para:", value: payload.receptor },
+                { title: "Pilar:", value: payload.pilar },
+                { title: "Puntos:", value: String(payload.puntos) },
+              ],
+            },
+            {
+              type: "TextBlock",
+              text: payload.mensaje,
+              wrap: true,
+              isSubtle: true,
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
 
 export async function notifyTeamsRecognition(
   payload: TeamsRecognitionPayload
@@ -35,14 +80,7 @@ export async function notifyTeamsRecognition(
     const res = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        emisor: payload.emisor,
-        receptor: payload.receptor,
-        pilar: payload.pilar,
-        puntos: payload.puntos,
-        mensaje: payload.mensaje,
-        fecha: new Date().toISOString(),
-      }),
+      body: JSON.stringify(buildAdaptiveCardMessage(payload)),
       signal: controller.signal,
     });
 
